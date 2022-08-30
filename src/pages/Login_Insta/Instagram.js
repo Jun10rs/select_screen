@@ -45,6 +45,9 @@ export default function App() {
         <Text style={styles.textForgot}>
           Esqueceu seu dados de login? Obtenha ajuda para entrar.
         </Text>
+        <Text 
+        style={{fontSize: 22, color: '#FFF', textDecorationLine: 'line-through'}} 
+        >      ou     </Text>
 
         <TouchableOpacity style={styles.buttonFace}>
           <Image

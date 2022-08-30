@@ -1,11 +1,5 @@
 import { useState } from "react";
-import {
-  Text,
-  TextInput,
-  View,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity } from "react-native";
 
 import { Entypo } from "@expo/vector-icons";
 
@@ -34,26 +28,82 @@ export default function Calculator() {
     "=",
   ];
 
+  const [currentNumber, setCurrentNumber] = useState("");
+  const [lastNumber, setLastNumber] = useState("");
+
+  function calculator() {
+    const splitNumber = currentNumber.split(' ');
+    const firstNumber = parseFloat(splitNumber[0]);
+    const lastNumber = parseFloat(splitNumber[2]);
+    const operator = splitNumber[1];
+
+    switch (operator) {
+      case "+":
+        setCurrentNumber((firstNumber + lastNumber).toString());
+        return;
+      case "-":
+        setCurrentNumber((firstNumber - lastNumber).toString());
+        return;
+      case "*":
+        setCurrentNumber((firstNumber * lastNumber).toString());
+        return;
+      case "/":
+        setCurrentNumber((firstNumber / lastNumber).toString());
+        return;
+    }
+  }
+
+  function handleInput(buttonPressed) {
+    if (
+      (buttonPressed === "+") |
+      (buttonPressed === "-") |
+      (buttonPressed === "*") |
+      (buttonPressed === "/")
+    ) {
+      setCurrentNumber(currentNumber + " " + buttonPressed + " ");
+      return;
+    }
+    switch (buttonPressed) {
+      case "DEL":
+        setCurrentNumber(currentNumber.substring(0, (currentNumber.length - 1)));
+        return;
+      case "AC":
+        setLastNumber("");
+        setCurrentNumber("");
+        return;
+      case "=":
+        setLastNumber(currentNumber + " = ");
+        calculator();
+        return;
+    }
+    setCurrentNumber(currentNumber + buttonPressed);
+  }
+
   const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: "#FFF",
       alignItems: "center",
-      justifyContent: "center",
+      justifyContent: "space-between",
     },
 
     result: {
       backgroundColor: theme ? "#282f3b" : "#f5f5f5",
       width: "100%",
-      minHeight: 300,
+      minHeight: 350,
       alignItems: "flex-end",
       justifyContent: "flex-end",
     },
 
     resultText: {
       margin: 10,
-      fontSize: 25,
-      color: theme ? 'white' : 'black'
+      fontSize: 40,
+      color: theme ? "white" : "black",
+    },
+
+    historyText: {
+      fontSize: 20,
+      color: theme ? "white" : "black"
     },
 
     buttonTheme: {
@@ -68,21 +118,32 @@ export default function Calculator() {
       margin: 15,
     },
 
-    buttons: {
+    containerButtons: {
       flexDirection: "row",
-      flexWrap: "wrap",
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+      padding: 10,
+      backgroundColor: theme ? "#282f3b" : "#e5e5e5"
     },
 
     button: {
-      borderColor: theme ? "#3f4d5b" : "#e5e5e5",
-      minHeight: 80,
-      minWidth: 80,
-      flex: 2,
-      alignItems: 'center',
-      borderColor: 'black',
-      borderWidth: 1,
-   
-      justifyContent: 'center'
+      width: '20%',
+      height: 50,
+      alignItems: "center",
+      justifyContent: "center",
+      borderRadius: 30,
+      elevation: 10,
+      margin: 5,
+      backgroundColor: theme ? "#282f3b" : "#e5e5e5"
+    },
+
+    buttonText: {
+      color: theme ? "white" : "black",
+      fontSize: 18
+    },
+    buttonOperator: {
+      color: 'orange',
+      fontSize: 18,
     },
   });
 
@@ -98,19 +159,28 @@ export default function Calculator() {
           />
         </TouchableOpacity>
 
-        <Text style={styles.resultText}> 2 + 2= 5</Text>
+        <Text style={styles.historyText}>{lastNumber}</Text>
+        <Text style={styles.resultText}>{currentNumber}</Text>
       </View>
 
-      <View style={styles.buttons}>
+      <View style={styles.containerButtons}>
         {buttons.map((button) =>
-          button === "=" ? (
-            <TouchableOpacity style={styles.button}>
-              <Text>{button}</Text>
+            button === "=" ? (
+            <TouchableOpacity
+              onPress={() => handleInput(button)}
+              key={button}
+              style={styles.button}
+            >
+              <Text style={styles.buttonOperator}>{button}</Text>
             </TouchableOpacity>
           ) : (
-            <TouchableOpacity style={styles.button}>
-              <Text>{button}</Text>
+            <TouchableOpacity
+              onPress={() => handleInput(button)}
+              style={styles.button}
+            >
+              <Text style={styles.buttonText}>{button}</Text>
             </TouchableOpacity>
+           
           )
         )}
       </View>
